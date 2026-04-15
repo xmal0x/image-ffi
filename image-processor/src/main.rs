@@ -1,4 +1,5 @@
 use clap::Parser;
+use image::ImageReader;
 
 #[derive(Parser)]
 #[command(name = "image-processor", about = "Image processor cli", version)]
@@ -31,4 +32,11 @@ fn main() {
         "Params: {} {} {} {} {}",
         input, output, plugin, params, plugin_path
     );
+
+    let img = ImageReader::open("bg.png").unwrap().decode().unwrap();
+    let rgba = img.to_rgba8();
+    let (width, height) = rgba.dimensions();
+    let raw = rgba.into_raw();
+
+    println!("{} {}", width, height);
 }
