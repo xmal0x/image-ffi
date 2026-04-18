@@ -15,10 +15,20 @@ pub extern "C" fn process_image(
     params: *const c_char,
 ) {
     println!("Mirror plugin called: {width}x{height}");
-    let params = unsafe { CStr::from_ptr(params) };
-    let json = params.to_str().unwrap();
-    let parsed: Params = serde_json::from_str(json).unwrap();
-    println!("Parsed params: {:?}", parsed);
+    let parsed = (|| {
+        if params.is_null() {
+            return None;
+        }
+        let c_str = unsafe { CStr::from_ptr(params) };
+        let json = c_str.to_str().ok()?;
+        serde_json::from_str(json).ok()
+    })();
+
+    let params = parsed.unwrap_or(Params {
+        mode: "vertical".to_string(),
+    });
+
+    println!("Parsed params: {:?}", params);
 
     let len = (width * height * 4) as usize;
     let data = unsafe { std::slice::from_raw_parts_mut(rgba_data, len) };
@@ -26,7 +36,7 @@ pub extern "C" fn process_image(
     let row_length = (width * 4) as usize;
     let rows_count = height as usize;
 
-    if parsed.mode == "vertical" {
+    if params.mode == "vertical" {
         vertical(data, row_length, rows_count);
     } else {
         horizontal(data, row_length, rows_count, width as usize);
