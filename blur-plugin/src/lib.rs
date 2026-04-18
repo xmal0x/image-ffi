@@ -20,6 +20,8 @@ pub extern "C" fn process_image(
         if params.is_null() {
             return None;
         }
+        // SAFETY,
+        // params should be not null, can be empty string
         let c_str = unsafe { CStr::from_ptr(params) };
         let json = c_str.to_str().ok()?;
         serde_json::from_str(json).ok()
@@ -32,6 +34,7 @@ pub extern "C" fn process_image(
 
     println!("Parsed params: {:?}", params);
 
+    // SAFETY, length should be calculated in right way
     let len = (width * height * 4) as usize;
     let data = unsafe { std::slice::from_raw_parts_mut(rgba_data, len) };
     let radius = params.radius;
