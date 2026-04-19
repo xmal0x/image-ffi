@@ -89,3 +89,43 @@ fn horizontal(data: &mut [u8], row_length: usize, rows_count: usize, width: usiz
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::ffi::CString;
+
+    use super::*;
+
+    #[test]
+    fn test_horizontal() {
+        let width = 3;
+        let height = 1;
+
+        let mut data: [u8; 12] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        let expected: [u8; 12] = [9, 10, 11, 12, 5, 6, 7, 8, 1, 2, 3, 4];
+
+        let params = CString::new(r#"{"mode":"horizontal"}"#).unwrap();
+
+        unsafe {
+            process_image(width, height, data.as_mut_ptr(), params.as_ptr());
+        }
+
+        assert_eq!(data, expected);
+    }
+
+    #[test]
+    fn test_vertical() {
+        let width = 2;
+        let height = 2;
+
+        let mut data: [u8; 16] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+        let expected: [u8; 16] = [9, 10, 11, 12, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8];
+
+        let params = CString::new(r#"{"mode":"vertical"}"#).unwrap();
+
+        unsafe {
+            process_image(width, height, data.as_mut_ptr(), params.as_ptr());
+        }
+        assert_eq!(data, expected);
+    }
+}

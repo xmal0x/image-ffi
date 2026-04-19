@@ -74,8 +74,8 @@ fn blur(data: &mut [u8], height: usize, width: usize, radius: isize) {
             let mut b_sum = 0.0;
             let mut weight_sum = 0.0;
 
-            for dy in -radius..radius {
-                for dx in -radius..radius {
+            for dy in -radius..=radius {
+                for dx in -radius..=radius {
                     let neighbour_x = column as isize + dx;
                     let neighbour_y = row as isize + dy;
 
@@ -87,8 +87,7 @@ fn blur(data: &mut [u8], height: usize, width: usize, radius: isize) {
                         continue;
                     }
 
-                    let dist =
-                        ((neighbour_x * neighbour_x + neighbour_y * neighbour_y) as f32).sqrt();
+                    let dist = ((dx * dx + dy * dy) as f32).sqrt();
                     let weight = 1.0 / (1.0 + dist);
 
                     let idx = (neighbour_y as usize * width + neighbour_x as usize) * 4;
@@ -106,4 +105,27 @@ fn blur(data: &mut [u8], height: usize, width: usize, radius: isize) {
         }
     }
     data.copy_from_slice(&new_data);
+}
+
+#[cfg(test)]
+mod tests {
+    use std::ffi::CString;
+
+    use super::*;
+
+    #[test]
+    fn blur() {
+        let width = 3;
+        let height = 1;
+
+        let mut data: [u8; 12] = [0, 0, 0, 255, 255, 0, 0, 255, 0, 0, 0, 255];
+
+        let params = CString::new(r#"{ "radius": 1, "iterations": 1 }"#).unwrap();
+
+        unsafe {
+            process_image(width, height, data.as_mut_ptr(), params.as_ptr());
+        }
+
+        assert!(data[0] == 0);
+    }
 }
