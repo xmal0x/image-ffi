@@ -185,7 +185,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "blur-plugin"
+name = "blur"
 version = "0.1.0"
 dependencies = [
  "serde",
@@ -617,7 +617,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "mirror-plugin"
+name = "mirror"
 version = "0.1.0"
 dependencies = [
  "serde",

@@ -1,5 +1,6 @@
 use clap::Parser;
 use image::ImageReader;
+use libloading::library_filename;
 use std::{
     ffi::CString,
     fs::File,
@@ -54,8 +55,10 @@ fn main() -> Result<(), ImageError> {
 
     let params = read_params(&params).unwrap_or(String::new());
 
+    let filename = library_filename(&plugin);
+
     let c_params = CString::new(params).map_err(|e| ImageError::ReadParamsError(e.to_string()))?;
-    let plugin = Plugin::new(&format!("{}/{}", plugin_path, plugin))
+    let plugin = Plugin::new(&format!("{}/{}", plugin_path, filename.to_string_lossy()))
         .map_err(|e| ImageError::PluginError(e.to_string()))?;
     let plugin = plugin
         .interface()

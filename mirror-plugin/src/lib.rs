@@ -33,7 +33,17 @@ pub extern "C" fn process_image(
     println!("Parsed params: {:?}", params);
 
     // SAFETY, length should be calculated in right way
-    let len = (width * height * 4) as usize;
+    let len = match (width as usize)
+        .checked_mul(height as usize)
+        .and_then(|res| res.checked_mul(4))
+    {
+        Some(v) => v,
+        None => {
+            println!("Imgage too large");
+            return;
+        }
+    };
+
     let data = unsafe { std::slice::from_raw_parts_mut(rgba_data, len) };
 
     let row_length = (width * 4) as usize;

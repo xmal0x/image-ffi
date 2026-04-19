@@ -1,5 +1,5 @@
 [package]
-name = "blur-plugin"
+name = "blur"
 version = "0.1.0"
 edition = "2024"
 

@@ -35,16 +35,32 @@ pub extern "C" fn process_image(
     println!("Parsed params: {:?}", params);
 
     // SAFETY, length should be calculated in right way
-    let len = (width * height * 4) as usize;
+    let len = match (width as usize)
+        .checked_mul(height as usize)
+        .and_then(|res| res.checked_mul(4))
+    {
+        Some(v) => v,
+        None => {
+            println!("Image too large");
+            return;
+        }
+    };
+
     let data = unsafe { std::slice::from_raw_parts_mut(rgba_data, len) };
-    let radius = params.radius;
+    let radius: isize = match params.radius.try_into() {
+        Ok(v) => v,
+        Err(_) => {
+            println!("Radius too large");
+            return;
+        }
+    };
 
     for _ in 0..params.iterations {
         blur(data, height as usize, width as usize, radius);
     }
 }
 
-fn blur(data: &mut [u8], height: usize, width: usize, radius: usize) {
+fn blur(data: &mut [u8], height: usize, width: usize, radius: isize) {
     let mut new_data = data.to_vec();
 
     for row in 0..height {
@@ -54,8 +70,8 @@ fn blur(data: &mut [u8], height: usize, width: usize, radius: usize) {
             let mut b_sum = 0.0;
             let mut weight_sum = 0.0;
 
-            for dy in -(radius as isize)..(radius as isize) {
-                for dx in -(radius as isize)..(radius as isize) {
+            for dy in -radius..radius {
+                for dx in -radius..radius {
                     let neighbour_x = column as isize + dx;
                     let neighbour_y = row as isize + dy;
 

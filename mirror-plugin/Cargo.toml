@@ -1,5 +1,5 @@
 [package]
-name = "mirror-plugin"
+name = "mirror"
 version = "0.1.0"
 edition = "2024"
 

@@ -6,7 +6,7 @@ Image processing plugin system
 ### Mirror
 #### command example
 ```
-cargo run -- --input cow.png --output new_cow.png --plugin libmirror_plugin.dylib --params mirror_params.json
+cargo run -- --input cow.png --output new_cow.png --plugin mirror --params mirror_params.json
 ```
 #### params.json example
 ```
@@ -16,7 +16,7 @@ cargo run -- --input cow.png --output new_cow.png --plugin libmirror_plugin.dyli
 ### Blur
 #### command example
 ```
-cargo run -- --input cow.png --output new_cow.png --plugin libmirror_plugin.dylib --params blur_params.json
+cargo run -- --input cow.png --output new_cow.png --plugin blur --params blur_params.json
 ```
 #### params.json example
 ```
