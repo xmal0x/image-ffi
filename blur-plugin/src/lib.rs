@@ -8,8 +8,12 @@ struct Params {
     iterations: usize,
 }
 
+/// SAFETY
+/// rgba_data must be a valid pointer
+/// params must be a valid null-terminated C string
+/// pointers must not be null
 #[unsafe(no_mangle)]
-pub extern "C" fn process_image(
+pub unsafe extern "C" fn process_image(
     width: u32,
     height: u32,
     rgba_data: *mut u8,

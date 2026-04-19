@@ -63,7 +63,9 @@ fn main() -> Result<(), ImageError> {
     let plugin = plugin
         .interface()
         .map_err(|e| ImageError::PluginError(e.to_string()))?;
-    (plugin.process_image)(width, height, raw.as_mut_ptr(), c_params.as_ptr());
+    unsafe {
+        (plugin.process_image)(width, height, raw.as_mut_ptr(), c_params.as_ptr());
+    }
 
     let result =
         image::RgbaImage::from_raw(width, height, raw).ok_or(ImageError::InvalidBufferSize)?;
